@@ -18,6 +18,7 @@
     "prettier": "^3.6.2"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "brcypt": "^1.0.1",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
