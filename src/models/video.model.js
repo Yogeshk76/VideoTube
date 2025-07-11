@@ -1,15 +1,15 @@
-import {mongoose, Schema} from "mongoose";
+import { mongoose, Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const videoSchema = new Schema(
   {
     videoFile: {
       type: String, // cloudinary url
-      required: [true, "Video file is required"]
+      required: [true, "Video file is required"],
     },
     thumbnail: {
       type: String, // cloudinary url
-      required: [true, "Thumbnail is required"]
+      required: [true, "Thumbnail is required"],
     },
     title: {
       type: String,
@@ -25,20 +25,20 @@ const videoSchema = new Schema(
     },
     views: {
       type: Number,
-      default: 0
+      default: 0,
     },
     isPublished: {
       type: Boolean,
-      default: true
+      default: true,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Owner is required"]
-    }
+      required: [true, "Owner is required"],
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
