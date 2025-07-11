@@ -14,22 +14,39 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import ApiError from "../utils/ApiError.js";
 
 const router = Router();
 
-router.route("/register").post(
-  upload.fields([
-    {
-      name: "avatar",
-      maxCount: 1,
+router
+  .route("/register")
+  .post(
+    (req, res, next) => {
+      upload.fields([
+        { name: "avatar", maxCount: 1 },
+        { name: "coverImage", maxCount: 1 },
+      ])(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return next(new ApiError(400, "File too large. Max size is 2MB."));
+          }
+
+          return next(new ApiError(400, `Multer error: ${err.message}`));
+        }
+
+        if (err?.code === "INVALID_FILE_TYPE") {
+          return next(new ApiError(400, err.message));
+        }
+
+        if (err) {
+          return next(new ApiError(500, "File upload failed"));
+        }
+
+        next();
+      });
     },
-    {
-      name: "coverImage",
-      maxCount: 1,
-    },
-  ]),
-  registerUser
-);
+    registerUser
+  );
 
 router.route("/login").post(loginUser);
 

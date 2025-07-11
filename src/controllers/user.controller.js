@@ -66,9 +66,9 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(avatarLocalPath, `avatars/${req.user._id}`);
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath, `coverImages/${req.user._id}`);
 
   if (!avatar) {
     throw new ApiError(400, "Failed to upload avatar");
@@ -95,7 +95,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(
       new ApiResponse(
-        200,
+        201,
         createdUser,
         "User registered successfully",
         null,
@@ -294,7 +294,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(
+    avatarLocalPath,
+    `avatars/${req.user._id}` 
+  );
 
   if (!avatar.url) {
     throw new ApiError(400, "Error while uploading on avatar");
@@ -324,7 +327,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Cover image file is required");
   }
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(
+    coverImageLocalPath,
+    `coverImage/${req.user._id}` // custom public_id
+  );
 
   if (!coverImage.url) {
     throw new ApiError(400, "Error while uploading cover image");
