@@ -5,12 +5,11 @@ const tweetSchema = new Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
   },
   content: {
     type: String,
-    required: true,
-    maxlength: 280
+    maxlength: 280,
+    required: true
   }
 },
 {
