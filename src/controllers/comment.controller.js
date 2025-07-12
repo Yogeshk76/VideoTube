@@ -1,31 +1,87 @@
-import mongoose from "mongoose"
-import {Comment} from "../models/comment.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import mongoose, { isValidObjectId } from "mongoose";
+import { Comment } from "../models/comment.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const getVideoComments = asyncHandler(async (req, res) => {
-    //TODO: get all comments for a video
-    const {videoId} = req.params
-    const {page = 1, limit = 10} = req.query
+  const { videoId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
 
-})
+  if (!req.user) {
+    throw new ApiError(
+      401,
+      "User needs to be logged in to access this resource"
+    );
+  }
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError("Invalid video ID", 400);
+  }
+
+  const videoObjectId = mongoose.Types.ObjectId(videoId);
+
+  const comments = await Comment.aggregate([
+    {
+      $match: {
+        video: videoObjectId,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    {
+      $unwind: "$owner",
+    },
+    {
+      $project: {
+        _id: 1,
+        content: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        "owner._id": 1,
+        "owner.name": 1,
+        "owner.email": 1,
+        "owner.avatar": 1,
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $skip: (parseInt(page) - 1) * parseInt(limit),
+    },
+    {
+      $limit: parseInt(limit),
+    },
+  ]);
+
+  if (!comments || comments.length === 0) {
+    throw new ApiError(404, "No comments found for this video");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Comments retrieved successfully", comments));
+});
 
 const addComment = asyncHandler(async (req, res) => {
-    // TODO: add a comment to a video
-})
+  // TODO: add a comment to a video
+});
 
 const updateComment = asyncHandler(async (req, res) => {
-    // TODO: update a comment
-})
+  // TODO: update a comment
+});
 
 const deleteComment = asyncHandler(async (req, res) => {
-    // TODO: delete a comment
-})
+  // TODO: delete a comment
+});
 
-export {
-    getVideoComments, 
-    addComment, 
-    updateComment,
-     deleteComment
-    }
+export { getVideoComments, addComment, updateComment, deleteComment };

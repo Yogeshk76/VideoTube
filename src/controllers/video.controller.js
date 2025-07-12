@@ -29,7 +29,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     ...(userId ? { owner: mongoose.Types.ObjectId(userId) } : {}),
   };
 
-  const skip = (page - 1) * parseInt(limit);
+  const skip = (parseInt(page) - 1) * parseInt(limit);
   const sortOrder = sortType === "asc" ? 1 : -1;
 
   const videos = await Video.aggregate([
