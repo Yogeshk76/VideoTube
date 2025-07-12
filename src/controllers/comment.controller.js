@@ -73,7 +73,37 @@ const getVideoComments = asyncHandler(async (req, res) => {
 });
 
 const addComment = asyncHandler(async (req, res) => {
-  // TODO: add a comment to a video
+  const { videoId } = req.params;
+  const { content } = req.body;
+
+  if (!req.user) {
+    throw new ApiError(401, "User needs to be logged in to add a comment");
+  }
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
+
+  if (!content || content.trim() === "") {
+    throw new ApiError(400, "Comment content cannot be empty");
+  }
+
+  const videoObjectId = videoId;
+  const newComment = new Comment({
+    content,
+    video: videoObjectId,
+    owner: req.user._id,
+  });
+
+  const savedComment = await newComment.save();
+
+  if (!savedComment) {
+    throw new ApiError(500, "Failed to add comment");
+  }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, "Comment added successfully", savedComment));
 });
 
 const updateComment = asyncHandler(async (req, res) => {
