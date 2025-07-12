@@ -27,6 +27,14 @@ const videoSchema = new Schema(
       type: Number,
       default: 0,
     },
+    videoPublicId: {
+      type: String,
+      required: true, // needed to delete the video from Cloudinary
+    },
+    thumbnailPublicId: {
+      type: String,
+      required: true, // needed to delete the thumbnail from Cloudinary
+    },
     isPublished: {
       type: Boolean,
       default: true,

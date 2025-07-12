@@ -13,14 +13,16 @@ const uploadOnCloudinary = async (localFilePath, publicId = null) => {
   try {
     if (!localFilePath) return "No file path provided";
 
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const options = {
       resource_type: "auto",
       overwrite: true,
-    })
+    };
 
-    if(publicId) {
+    if (publicId) {
       options.public_id = publicId;
     }
+
+    const response = await cloudinary.uploader.upload(localFilePath, options);
 
     fs.unlinkSync(localFilePath); // Delete the local file after upload
     return response;
