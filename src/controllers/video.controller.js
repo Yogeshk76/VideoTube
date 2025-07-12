@@ -164,6 +164,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
+  if (!req.user) {
+  throw new ApiError(401, "User must be logged in");
+} 
+
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");
   }
@@ -187,6 +191,10 @@ const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { title, description } = req.body;
 
+  if (!req.user) {
+    throw new ApiError(401, "User must be logged in");
+  }
+
   if (!(title || description)) {
     throw new ApiError(400, "Title or description is required to update video");
   }
@@ -200,6 +208,10 @@ const updateVideo = asyncHandler(async (req, res) => {
   if (!video) {
     throw new ApiError(404, "Video not found");
   }
+
+  if (!video.owner.equals(req.user._id)) {
+  throw new ApiError(403, "Not authorized to modify this video");
+}
 
   try {
     const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
@@ -231,14 +243,69 @@ const updateVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "Video updated successfully"));
 });
 
-
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  //TODO: delete video
+
+  if (!req.user) {
+  throw new ApiError(401, "User must be logged in");
+}
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+
+  if (!video.owner.equals(req.user._id)) {
+  throw new ApiError(403, "Not authorized to modify this video");
+}
+
+  await Video.findByIdAndDelete(videoId);
+
+  try {
+    if (video.videoPublicId) {
+      await cloudinary.uploader.destroy(video.videoPublicId, {
+        resource_type: "video",
+      });
+    }
+
+    if (video.thumbnailPublicId) {
+      await cloudinary.uploader.destroy(video.thumbnailPublicId, {
+        resource_type: "image",
+      });
+    }
+  } catch (err) {
+    throw new ApiError(500, err);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Video deleted successfully"));
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
+
+  if (!req.user) {
+  throw new ApiError(401, "User must be logged in");
+}
+
+    if (!isValidObjectId(videoId)) {
+        throw new ApiError(400, "Invalid video ID");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video.owner.equals(req.user._id)) {
+  throw new ApiError(403, "Not authorized to modify this video");
+}
+
+    video.isPublished = !video.isPublished;
+    await video.save();
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, video, "Video publish status toggled successfully"));
 });
 
 export {
