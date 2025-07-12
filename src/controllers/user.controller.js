@@ -50,7 +50,6 @@ const registerUser = asyncHandler(async (req, res) => {
     avatarLocalPath = req.files.avatar[0].path;
   }
 
-
   let coverImageLocalPath;
 
   if (
@@ -397,11 +396,16 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
           $size: "$subscribedTo",
         },
         isSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-            then: true,
-            else: false,
-          },
+          $in: [
+            new mongoose.Types.ObjectId(req.user._id),
+            {
+              $map: {
+                input: "$subscribers",
+                as: "sub",
+                in: "$$sub.subscriber",
+              },
+            },
+          ],
         },
       },
     },
