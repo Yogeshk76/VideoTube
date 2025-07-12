@@ -50,7 +50,6 @@ const registerUser = asyncHandler(async (req, res) => {
     avatarLocalPath = req.files.avatar[0].path;
   }
 
-  // const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
   let coverImageLocalPath;
 
@@ -66,9 +65,15 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath, `avatars/${req.user._id}`);
+  const avatar = await uploadOnCloudinary(
+    avatarLocalPath,
+    `avatars/${req.user._id}`
+  );
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath, `coverImages/${req.user._id}`);
+  const coverImage = await uploadOnCloudinary(
+    coverImageLocalPath,
+    `coverImages/${req.user._id}`
+  );
 
   if (!avatar) {
     throw new ApiError(400, "Failed to upload avatar");
@@ -296,7 +301,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
   const avatar = await uploadOnCloudinary(
     avatarLocalPath,
-    `avatars/${req.user._id}` 
+    `avatars/${req.user._id}`
   );
 
   if (!avatar.url) {
@@ -354,49 +359,51 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 //difficult
-const getUserChannelProfile = asyncHandler(async(req, res) => {
-  const {username} = req.params
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
 
-  if(!username?.trim()) {
+  if (!username?.trim()) {
     throw new ApiError(400, "Username is required");
   }
 
   const channel = await User.aggregate([
     {
       $match: {
-        username: username.toLowerCase()
-      }
+        username: username.toLowerCase(),
+      },
     },
     {
       $lookup: {
         from: "subscriptions",
         localField: "_id",
         foreignField: "channel",
-        as: "subscribers"
-      }
+        as: "subscribers",
+      },
     },
     {
       $lookup: {
         from: "subscriptions",
         localField: "_id",
         foreignField: "subscriber",
-        as: "subscribedTo"
-      }
+        as: "subscribedTo",
+      },
     },
     {
       $addFields: {
         subscribersCount: {
-          $size: "$subscribers"
+          $size: "$subscribers",
         },
         subscribedToCount: {
-          $size: "$subscribedTo"
+          $size: "$subscribedTo",
         },
         isSubscribed: {
-          if: {$in: [req.user?._id, "$subscribers.subscriber"]},
-          then: true,
-          else: false
-        }
-      }
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
     },
     {
       $project: {
@@ -407,19 +414,20 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
         coverImage: 1,
         subscribersCount: 1,
         subscribedToCount: 1,
-        isSubscribed: 1
-      }
-    }
-  ])
+        isSubscribed: 1,
+      },
+    },
+  ]);
 
-  if(!channel?.length) {
+  if (!channel?.length) {
     throw new ApiError(404, "Channel doesn't exist");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, channel[0], "Channel profile fetched successfully"));
-
+    .json(
+      new ApiResponse(200, channel[0], "Channel profile fetched successfully")
+    );
 });
 
 //difficult x2
@@ -427,8 +435,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id)
-      }
+        _id: new mongoose.Types.ObjectId(req.user?._id),
+      },
     },
     {
       $lookup: {
@@ -448,25 +456,31 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                   $project: {
                     fullName: 1,
                     username: 1,
-                    avatar: 1
-                  }
-                }
-              ]
-            }
+                    avatar: 1,
+                  },
+                },
+              ],
+            },
           },
           {
             $addFields: {
-              owner: { $first: "$owner" }
-            }
-          }
-        ]
-      }
-    }
-  ])
+              owner: { $first: "$owner" },
+            },
+          },
+        ],
+      },
+    },
+  ]);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistory,
+        "Watch history fetched successfully"
+      )
+    );
 });
 
 export {
@@ -480,5 +494,5 @@ export {
   updateUserAvatar,
   updateUserCoverImage,
   getUserChannelProfile,
-  getWatchHistory
+  getWatchHistory,
 };

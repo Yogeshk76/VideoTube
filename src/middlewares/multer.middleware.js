@@ -2,10 +2,10 @@ import multer from "multer";
 import path from "path";
 
 // Allowed file types
-const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp",
+  "video/mp4", "video/webm", "video/quicktime"];
 
-// Max file size (2MB)
-const MAX_SIZE = 2 * 1024 * 1024;
+const MAX_SIZE = 100 * 1024 * 1024;
 
 
 const fileFilter = (req, file, cb) => {
