@@ -107,7 +107,41 @@ const addComment = asyncHandler(async (req, res) => {
 });
 
 const updateComment = asyncHandler(async (req, res) => {
-  // TODO: update a comment
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  if (!req.user) {
+    throw new ApiError(401, "User needs to be logged in to update a comment");
+  }
+
+  if (!isValidObjectId(commentId)) {
+    throw new ApiError(400, "Invalid comment ID");
+  }
+
+  if (!content || content.trim() === "") {
+    throw new ApiError(400, "Comment content cannot be empty");
+  }
+
+  try {
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      throw new ApiError(404, "Comment not found");
+    }
+
+    if (!comment.owner.equals(req.user._id)) {
+      throw new ApiError(403, "Not authorized to update this comment");
+    }
+
+    comment.content = content;
+    await comment.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Comment updated successfully", comment));
+  } catch (error) {
+    throw new ApiError(500, "Failed to update comment");
+  }
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
