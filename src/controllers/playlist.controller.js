@@ -67,13 +67,13 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid playlist ID")
     }
 
-    if(!(playlist.owner.equals(req.user._id))) {
-        throw new ApiError(403, "You do not have permission to access this playlist")
-    }
-
     const playlist = await Playlist.findById(playlistId).populate('videos', 'title duration').exec()
     if (!playlist) {
         throw new ApiError(404, "Playlist not found")
+    }
+
+    if(!(playlist.owner.equals(req.user._id))) {
+    throw new ApiError(403, "You do not have permission to access this playlist")
     }
 
     if(!playlist) {

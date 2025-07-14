@@ -110,7 +110,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Tweet not found")
     }
 
-    if (tweet.owner.toString() === userId.toString()) {
+    if (!tweet.owner?.toString() === req.user?._id?.toString()) {
         throw new ApiError(400, "You cannot like your own tweet")
     }
 

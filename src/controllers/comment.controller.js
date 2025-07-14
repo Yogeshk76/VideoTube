@@ -19,7 +19,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     throw new ApiError("Invalid video ID", 400);
   }
 
-  const videoObjectId = mongoose.Types.ObjectId(videoId);
+  const videoObjectId = new mongoose.Types.ObjectId(videoId);
 
   const comments = await Comment.aggregate([
     {

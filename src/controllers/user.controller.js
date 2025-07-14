@@ -66,12 +66,12 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const avatar = await uploadOnCloudinary(
     avatarLocalPath,
-    `avatars/${req.user._id}`
+    `avatars/${req.body.username}`
   );
 
   const coverImage = await uploadOnCloudinary(
     coverImageLocalPath,
-    `coverImages/${req.user._id}`
+    `coverImages/${req.body.username}`
   );
 
   if (!avatar) {
@@ -153,7 +153,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { user: loggedInUser, accessToken, refreshToken },
+        { user: loggedInUser},
         "User logged in successfully"
       )
     );
@@ -269,7 +269,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Full name and email are required");
   }
 
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -280,7 +280,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  ).select("-password");
+  ).select("-password -refreshToken");
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -288,7 +288,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Account details updated successfully"));
+  .json(new ApiResponse(200, user, "Account details updated successfully"));
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
@@ -300,7 +300,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
   const avatar = await uploadOnCloudinary(
     avatarLocalPath,
-    `avatars/${req.user._id}`
+    `avatars/${req.body.username}`
   );
 
   if (!avatar.url) {
@@ -317,7 +317,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  ).select("-password");
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
@@ -333,7 +333,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
   const coverImage = await uploadOnCloudinary(
     coverImageLocalPath,
-    `coverImage/${req.user._id}` // custom public_id
+    `coverImage/${req.body.username}` 
   );
 
   if (!coverImage.url) {

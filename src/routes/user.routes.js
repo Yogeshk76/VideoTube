@@ -15,6 +15,7 @@ import {
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {ApiError} from "../utils/ApiError.js";
+import multer from "multer";
 
 const router = Router();
 
