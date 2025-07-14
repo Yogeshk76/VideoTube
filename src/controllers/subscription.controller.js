@@ -1,5 +1,5 @@
 import mongoose, {isValidObjectId} from "mongoose"
-// import {User} from "../models/user.model.js"
+// import {User} from "../models/user.model.js"w
 import { Subscription } from "../models/subscription.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
@@ -48,6 +48,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 });
 
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
+    // get all subscribers of a channel
     const {channelId} = req.params
 
     if (!isValidObjectId(channelId)) {
@@ -69,25 +70,26 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 })
 
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-    const {subscriberId} = req.params
+    const { userId } = req.params;
 
-    if (!isValidObjectId(subscriberId)) {
-        throw new ApiError(400, "Invalid subscriber ID")
+    if (!isValidObjectId(userId)) {
+        throw new ApiError(400, "Invalid user ID");
     }
 
-    const subscribedChannels = await Subscription.find({ subscriber: subscriberId })
-        .populate("channel", "email username avatar")
+    const subscribedChannels = await Subscription.find({ subscriber: userId })
+        .populate("channel", "email username avatar");
 
     if (subscribedChannels.length === 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, [], "No subscribed channels found for this user"));
-  }
+        return res
+            .status(200)
+            .json(new ApiResponse(200, [], "No subscribed channels found for this user"));
+    }
 
     return res.status(200).json(
         new ApiResponse(200, subscribedChannels, "Subscribed channels retrieved successfully")
-    )
-})
+    );
+});
+
 
 export {
     toggleSubscription,
