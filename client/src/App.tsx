@@ -1,12 +1,19 @@
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// Page imports
+import EmptyVideoPage from '@/pages/EmptyVideoPage';
+import Layout from '@/components/Layout';
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<EmptyVideoPage />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
+};
 
-export default App
+export default App;
