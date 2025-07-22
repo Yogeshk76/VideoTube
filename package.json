@@ -1,33 +1,7 @@
 {
-  "name": "videotube",
-  "version": "1.0.0",
-  "description": "A professional grade backend",
-  "keywords": [
-    "javascript",
-    "backend"
-  ],
-  "license": "ISC",
-  "author": "Yogesh Kumar",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon src/index.js"
-  },
+  "name": "videotube-root",
+  "private": true,
   "devDependencies": {
-    "nodemon": "^3.1.10",
     "prettier": "^3.6.2"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "brcypt": "^1.0.1",
-    "cloudinary": "^2.7.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.0.1",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.1",
-    "mongoose-aggregate-paginate-v2": "^1.1.4",
-    "multer": "^2.0.1"
   }
 }
