@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { Playlist } from '@/types';
+import type { Playlist } from '@/types';
 
 interface PlaylistState {
   playlists: Playlist[];
@@ -15,6 +15,8 @@ const initialState: PlaylistState = {
   loading: false,
   error: null,
 };
+
+//createPlaylist
 
 export const getUserPlaylists = createAsyncThunk<Playlist[], string>(
   'playlists/getUserPlaylists',
@@ -39,6 +41,14 @@ export const getPlaylistById = createAsyncThunk<Playlist, string>(
     }
   }
 );
+
+//addVideoToPlaylist
+
+//removeVideoFromPlaylist
+
+//deletePlaylist
+
+//updatePlaylist
 
 const playlistSlice = createSlice({
   name: 'playlists',

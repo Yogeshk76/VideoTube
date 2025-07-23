@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { Channel } from '@/types';
+import type { Subscription } from '@/types';
 
 interface SubscriptionState {
-  subscribedChannels: Channel[];
+  subscribedChannels: Subscription[];
   loading: boolean;
   error: string | null;
 }
@@ -25,7 +25,9 @@ export const toggleSubscription = createAsyncThunk<void, string>(
   }
 );
 
-export const getSubscribedChannels = createAsyncThunk<Channel[], string>(
+//getUserChannelSubscribers
+
+export const getSubscribedChannels = createAsyncThunk<Subscription[], string>(
   'subscriptions/getSubscribedChannels',
   async (subscriberId, { rejectWithValue }) => {
     try {
