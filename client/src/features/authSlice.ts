@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { User, Auth } from '@/types';
+import type { User, LoginResponse, ChangePasswordInput, LoginInput, UpdateAccountDetailsInput, RegisterInput } from '@/types';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -16,11 +16,15 @@ const initialState: AuthState = {
   error: null,
 };
 
-export const login = createAsyncThunk<Auth, { email?: string; password?: string }>(
+export const login = createAsyncThunk<LoginResponse, LoginInput>(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const { data } = await api.post('/users/login', credentials);
+      const { data } = await api.post('/users/login', credentials, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Login failed');
@@ -28,9 +32,8 @@ export const login = createAsyncThunk<Auth, { email?: string; password?: string 
   }
 );
 
-export const registerUser = createAsyncThunk<User, FormData>(
-  'auth/register',
-  async (userData, { rejectWithValue }) => {
+export const registerUser = createAsyncThunk<LoginResponse, RegisterInput>(
+  'users/registerUser', async (userData, {rejectWithValue}) => {
     try {
       const { data } = await api.post('/users/register', userData, {
         headers: {
@@ -40,32 +43,39 @@ export const registerUser = createAsyncThunk<User, FormData>(
       return data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      
     }
   }
-);
+)
 
-export const updateAccountDetails = createAsyncThunk<User, { username: string; email: string }>(
-  'auth/updateAccountDetails',
-  async (accountData, { rejectWithValue }) => {
+export const getCurrentUser = createAsyncThunk<User>(
+  'auth/getCurrentUser',
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.patch('/users/update-account', accountData);
+      const { data } = await api.get('/users/current-user');
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update account details');
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
     }
   }
 );
 
-export const changeCurrentPassword = createAsyncThunk<void, { oldPassword?: string; newPassword?: string }>(
+export const changeCurrentPassword = createAsyncThunk<void, ChangePasswordInput>(
   'auth/changeCurrentPassword',
   async (passwordData, { rejectWithValue }) => {
     try {
-      await api.post('/users/change-password', passwordData);
+      await api.post('/users/change-password', passwordData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to change password');
     }
   }
 );
+
 
 const authSlice = createSlice({
   name: 'auth',
@@ -75,6 +85,10 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
     },
+    resetError: (state) => {
+      state.error = null;
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -102,18 +116,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(updateAccountDetails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateAccountDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-      })
-      .addCase(updateAccountDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
       .addCase(changeCurrentPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -128,6 +130,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, resetError } = authSlice.actions;
 
 export default authSlice.reducer; 

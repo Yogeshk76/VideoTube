@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { Comment } from '@/types';
+import type { Comment } from '@/types';
 
 interface CommentState {
   comments: Comment[];
@@ -37,6 +37,10 @@ export const addComment = createAsyncThunk<Comment, { videoId: string; content: 
     }
   }
 );
+
+//updateComment
+
+//deleteComment
 
 const commentSlice = createSlice({
   name: 'comments',

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { Video } from '@/types';
+import type { Video } from '@/types';
 
 interface VideoState {
   videos: Video[];
@@ -42,32 +42,21 @@ export const getVideoById = createAsyncThunk<Video, string>(
   }
 );
 
-export const getChannelVideos = createAsyncThunk<Video[], string>(
-  'videos/getChannelVideos',
-  async (channelId, { rejectWithValue }) => {
-    try {
-      const { data } = await api.get(`/dashboard/videos/${channelId}`);
-      return data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch channel videos');
-    }
-  }
-);
 
 export const publishAVideo = createAsyncThunk<Video, FormData>(
   'videos/publishAVideo',
-  async (videoData, { rejectWithValue, dispatch }) => {
+  async (videoData, { rejectWithValue, /* dispatch */ }) => {
     try {
       const { data } = await api.post('/videos', videoData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent) => {
-          const progress = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          dispatch(setUploadProgress(progress));
-        },
+        // onUploadProgress: (progressEvent ) => {
+        //   const progress = Math.round(
+        //     (progressEvent.loaded * 100) / progressEvent.total
+        //   );
+        //   dispatch(setUploadProgress(progress));
+        // },
       });
       return data.data;
     } catch (error: any) {
@@ -99,6 +88,8 @@ export const deleteVideo = createAsyncThunk<string, string>(
     }
   }
 );
+
+//togglePublishStatus
 
 const videoSlice = createSlice({
   name: 'videos',
@@ -134,18 +125,18 @@ const videoSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(getChannelVideos.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getChannelVideos.fulfilled, (state, action) => {
-        state.loading = false;
-        state.videos = action.payload;
-      })
-      .addCase(getChannelVideos.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
+      // .addCase(getChannelVideos.pending, (state) => {
+      //   state.loading = true;
+      //   state.error = null;
+      // })
+      // .addCase(getChannelVideos.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.videos = action.payload;
+      // })
+      // .addCase(getChannelVideos.rejected, (state, action) => {
+      //   state.loading = false;
+      //   state.error = action.payload as string;
+      // })
       .addCase(publishAVideo.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -167,11 +158,11 @@ const videoSlice = createSlice({
       })
       .addCase(updateVideo.fulfilled, (state, action) => {
         state.loading = false;
-        if (state.video?.id === action.payload.id) {
+        if (state.video?._id === action.payload._id) {
           state.video = action.payload;
         }
         state.videos = state.videos.map((video) =>
-          video.id === action.payload.id ? action.payload : video
+          video._id === action.payload._id ? action.payload : video
         );
       })
       .addCase(updateVideo.rejected, (state, action) => {
@@ -184,7 +175,7 @@ const videoSlice = createSlice({
       })
       .addCase(deleteVideo.fulfilled, (state, action) => {
         state.loading = false;
-        state.videos = state.videos.filter((video) => video.id !== action.payload);
+        state.videos = state.videos.filter((video) => video._id !== action.payload);
       })
       .addCase(deleteVideo.rejected, (state, action) => {
         state.loading = false;

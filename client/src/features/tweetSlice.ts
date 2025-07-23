@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import { Tweet } from '@/types';
+import type { Tweet } from '@/types';
 
 interface TweetState {
   tweets: Tweet[];
@@ -37,6 +37,10 @@ export const createTweet = createAsyncThunk<Tweet, { content: string }>(
     }
   }
 );
+
+//updateTweet
+
+//deleteTweet
 
 const tweetSlice = createSlice({
   name: 'tweets',
