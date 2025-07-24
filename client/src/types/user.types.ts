@@ -14,6 +14,36 @@ export interface User {
 }
 
 export interface UpdateAccountDetailsInput {
-  fullName?: string;
-  email?: string;
+  fullName: string;
+  email: string;
 }
+
+// For refresh endpoint
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface UpdateUserAvatarInput {
+  avatar: File | string; 
+}
+
+export interface UpdateUserCoverImageInput {
+  coverImage: File | string; 
+}
+
+export interface GetUserChannelProfileInput {
+  username: string;
+}
+
+export interface WatchHistoryData {
+  watchHistory: (Video | string)[];
+}
+
+
+
+// refreshAccessToken,
+//   updateUserAvatar,
+//   updateUserCoverImage,
+//   getUserChannelProfile,
+//   getWatchHistory,

@@ -350,7 +350,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  ).select("-password");
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
@@ -500,3 +500,5 @@ export {
   getUserChannelProfile,
   getWatchHistory,
 };
+  
+

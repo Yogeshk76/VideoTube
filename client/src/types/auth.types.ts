@@ -1,13 +1,12 @@
 import type { User } from './user.types';
 
-// For refresh endpoint
-export interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  statusCode: number;
 }
 
-// For login/register endpoint
-export interface LoginResponse {
+export interface LoginData {
   user: User;
 }
 
@@ -16,8 +15,8 @@ export interface RegisterInput {
   username: string;
   email: string;
   password: string;
-  avatar: File;
-  coverImage?: File;
+  avatar: File | string;
+  coverImage?: File | string;
 }
 
 export interface LoginInput {
