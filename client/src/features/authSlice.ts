@@ -1,6 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import type { User, LoginData, ChangePasswordInput, LoginInput, RegisterInput, ApiResponse } from '@/types';
+import { setSuccessState } from '@/utils/successState';
+import type {
+  User,
+  LoginData,
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  ApiResponse,
+} from '@/types';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -20,14 +28,13 @@ const initialState: AuthState = {
   message: null,
 };
 
+
 export const login = createAsyncThunk<ApiResponse<LoginData>, LoginInput>(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/users/login', credentials, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       return data;
     } catch (error: any) {
@@ -37,20 +44,18 @@ export const login = createAsyncThunk<ApiResponse<LoginData>, LoginInput>(
 );
 
 export const registerUser = createAsyncThunk<ApiResponse<LoginData>, RegisterInput>(
-  'users/registerUser', async (userData, {rejectWithValue}) => {
+  'auth/registerUser',
+  async (userData, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/users/register', userData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed');
-      
     }
   }
-)
+);
 
 export const getCurrentUser = createAsyncThunk<ApiResponse<User>, void>(
   'auth/getCurrentUser',
@@ -68,12 +73,9 @@ export const changeCurrentPassword = createAsyncThunk<void, ChangePasswordInput>
   'auth/changeCurrentPassword',
   async (passwordData, { rejectWithValue }) => {
     try {
-      const {data} = await api.post('/users/change-password', passwordData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      await api.post('/users/change-password', passwordData, {
+        headers: { 'Content-Type': 'application/json' },
       });
-      return data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to change password');
     }
@@ -94,43 +96,56 @@ const authSlice = createSlice({
     },
     resetError: (state) => {
       state.error = null;
+      state.message = null;
+      state.statusCode = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Login
+      // ── Login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.data.user;
-        state.message = action.payload.message;
-        state.statusCode = action.payload.statusCode;
+        setSuccessState(state, action.payload);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
-      // Register
+      // ── Register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.message = action.payload.message;
-        state.statusCode = action.payload.statusCode;
+        setSuccessState(state, action.payload);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
-      // Change Password
+      // ── Get Current User
+      .addCase(getCurrentUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
+        state.user = action.payload.data;
+        state.isAuthenticated = true;
+        setSuccessState(state, action.payload);
+      })
+      .addCase(getCurrentUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // ── Change Password
       .addCase(changeCurrentPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
