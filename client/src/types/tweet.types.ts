@@ -8,3 +8,20 @@ export interface Tweet {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TweetIdInput {
+  tweetId: string;
+}
+
+export interface UserIdInput {
+  userId: string;
+}
+
+export interface CreateTweetInput {
+  content: string;
+}
+
+export interface UpdateTweetInput {
+  _id: string;
+  content: string;
+}

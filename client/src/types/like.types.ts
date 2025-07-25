@@ -14,14 +14,14 @@ export interface Like {
   updatedAt: string;
 }
 
-export interface VideoIdInput {
+export interface VideoInput {
   videoId: string;
 }
 
-export interface CommentIdInput {
+export interface CommentInput {
   commentId: string;
 }
 
-export interface TweetIdInput {
+export interface TweetInput {
   tweetId: string;
 }

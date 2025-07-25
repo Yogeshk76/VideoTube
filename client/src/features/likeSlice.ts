@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import type { ApiResponse, VideoIdInput, CommentIdInput, TweetIdInput } from '@/types';
+import type { ApiResponse, VideoInput, CommentInput, TweetInput } from '@/types';
 import { setSuccessState } from '@/utils/successState';
 
 
@@ -18,7 +18,7 @@ const initialState: LikeState = {
   message: null,
 };
 
-export const toggleVideoLike = createAsyncThunk<ApiResponse<null>, VideoIdInput>(
+export const toggleVideoLike = createAsyncThunk<ApiResponse<null>, VideoInput>(
   'likes/toggleVideoLike',
   async (videoId, { rejectWithValue }) => {
     try {
@@ -30,7 +30,7 @@ export const toggleVideoLike = createAsyncThunk<ApiResponse<null>, VideoIdInput>
   }
 );
 
-export const toggleCommentLike = createAsyncThunk<ApiResponse<null>, CommentIdInput>(
+export const toggleCommentLike = createAsyncThunk<ApiResponse<null>, CommentInput>(
   'likes/toggleCommentLike',
   async (commentId, { rejectWithValue }) => {
     try {
@@ -42,7 +42,7 @@ export const toggleCommentLike = createAsyncThunk<ApiResponse<null>, CommentIdIn
   }
 );
 
-export const toggleTweetLike = createAsyncThunk<ApiResponse<null>, TweetIdInput>(
+export const toggleTweetLike = createAsyncThunk<ApiResponse<null>, TweetInput>(
   'likes/toggleTweetLike',
   async (tweetId, { rejectWithValue }) => {
     try {
