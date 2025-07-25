@@ -39,11 +39,3 @@ export interface GetUserChannelProfileInput {
 export interface WatchHistoryData {
   watchHistory: (Video | string)[];
 }
-
-
-
-// refreshAccessToken,
-//   updateUserAvatar,
-//   updateUserCoverImage,
-//   getUserChannelProfile,
-//   getWatchHistory,
