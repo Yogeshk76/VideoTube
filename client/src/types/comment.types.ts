@@ -10,3 +10,21 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Comments {
+  comments: Comment[];
+}
+
+export interface CommentIdInput {
+  _id: string;
+}
+
+export interface AddCommentInput {
+  videoId: string;
+  content: string;
+}
+
+export interface UpdateCommentInput {
+  _id: string;
+  content: string;
+}
