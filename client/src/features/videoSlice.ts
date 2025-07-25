@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
 import type { Video, ApiResponse, PublishAVideoInput, UpdateVideoInput, DeleteVideoInput, VideoIdInput } from '@/types';
 import { setSuccessState } from '@/utils/successState';
-import { resetError } from './authSlice';
-import { stat } from 'fs';
 
 interface VideoState {
   isAuthenticated: boolean;
@@ -12,7 +10,6 @@ interface VideoState {
   loading: boolean;
   error: string | null;
   statusCode: number | null;
-  uploadProgress: number;
   message?: string | null;
 }
 
@@ -21,7 +18,6 @@ const initialState: VideoState = {
   video: null,
   loading: false,
   error: null,
-  uploadProgress: 0,
   statusCode: null,
   message: null,
   isAuthenticated: false,
@@ -53,18 +49,12 @@ export const getVideoById = createAsyncThunk<ApiResponse<Video>, VideoIdInput>(
 
 export const publishAVideo = createAsyncThunk<ApiResponse<Video>, PublishAVideoInput>(
   'videos/publishAVideo',
-  async (videoData, { rejectWithValue, /* dispatch */ }) => {
+  async (videoData, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/videos', videoData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        },
-        // onUploadProgress: (progressEvent ) => {
-        //   const progress = Math.round(
-        //     (progressEvent.loaded * 100) / progressEvent.total
-        //   );
-        //   dispatch(setUploadProgress(progress));
-        // },
+        }
       });
       return data;
     } catch (error: any) {
@@ -125,9 +115,6 @@ const videoSlice = createSlice({
   name: 'videos',
   initialState,
   reducers: {
-    setUploadProgress: (state, action) => {
-      state.uploadProgress = action.payload;
-    },
     resetVideoState: (state) => {
   state.video = null;
   state.error = null;
@@ -175,18 +162,15 @@ resetError: (state) => {
       .addCase(publishAVideo.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.uploadProgress = 0;
       })
       .addCase(publishAVideo.fulfilled, (state, action) => {
         state.loading = false;
         state.videos.push(action.payload.data);
         setSuccessState(state, action.payload);
-        state.uploadProgress = 0;
       })
       .addCase(publishAVideo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        state.uploadProgress = 0;
       })
       // ── Update Video
       .addCase(updateVideo.pending, (state) => {
@@ -196,6 +180,7 @@ resetError: (state) => {
       .addCase(updateVideo.fulfilled, (state, action) => {
         state.loading = false;
         state.video = action.payload.data;
+        state.videos = state.videos.map(video => video._id === action.payload.data._id ? action.payload.data : video);
         setSuccessState(state, action.payload);
       })
       .addCase(updateVideo.rejected, (state, action) => {
@@ -233,6 +218,6 @@ resetError: (state) => {
   },
 });
 
-export const { setUploadProgress } = videoSlice.actions;
+export const { resetVideoState, resetError } = videoSlice.actions;
 
 export default videoSlice.reducer; 
