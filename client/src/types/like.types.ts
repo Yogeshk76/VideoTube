@@ -13,3 +13,15 @@ export interface Like {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface VideoIdInput {
+  videoId: string;
+}
+
+export interface CommentIdInput {
+  commentId: string;
+}
+
+export interface TweetIdInput {
+  tweetId: string;
+}

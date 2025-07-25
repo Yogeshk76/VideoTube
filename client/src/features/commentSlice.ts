@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
 import type { Comment, ApiResponse, CommentIdInput, AddCommentInput, UpdateCommentInput } from '@/types';
 import { setSuccessState } from '@/utils/successState';
-import { stat } from 'fs';
 
 interface CommentState {
   comments: Comment[];
@@ -64,7 +63,7 @@ export const updateComment = createAsyncThunk<ApiResponse<Comment>, UpdateCommen
   }
 );
 
-export const deleteComment = createAsyncThunk<ApiResponse<string>, CommentIdInput>(
+export const deleteComment = createAsyncThunk<ApiResponse<null>, CommentIdInput>(
   'comments/deleteComment',
   async ({ _id }, { rejectWithValue }) => {
     try {

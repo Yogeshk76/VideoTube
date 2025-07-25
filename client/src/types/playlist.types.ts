@@ -11,3 +11,26 @@ export interface Playlist {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Playlists {
+  playlists: Playlist[];
+}
+
+export interface UserIdInput {
+  userId: string;
+}
+
+export interface PlaylistIdInput {
+  playlistId: string;
+}
+
+export interface AddVideoToPlaylistInput {
+  videoId: string;
+  playlistId: string;
+}
+
+export interface UpdatePlaylistInput {
+  playlistId: string;
+  name?: string;
+  description?: string;
+}

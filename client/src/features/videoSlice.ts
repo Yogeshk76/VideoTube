@@ -79,7 +79,7 @@ export const updateVideo = createAsyncThunk<ApiResponse<Video>, UpdateVideoInput
   }
 );
 
-export const deleteVideo = createAsyncThunk<ApiResponse<string>, DeleteVideoInput>(
+export const deleteVideo = createAsyncThunk<ApiResponse<null>, DeleteVideoInput>(
   'videos/deleteVideo',
   async (videoId, { rejectWithValue }) => {
     try {
