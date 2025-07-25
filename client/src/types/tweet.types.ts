@@ -13,7 +13,7 @@ export interface TweetIdInput {
   tweetId: string;
 }
 
-export interface UserIdInput {
+export interface UserId {
   userId: string;
 }
 

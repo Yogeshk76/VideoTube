@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/api/axios';
-import type { Tweet, ApiResponse, TweetIdInput, UserIdInput, CreateTweetInput , UpdateTweetInput} from '@/types';
+import type { Tweet, ApiResponse, TweetIdInput, UserId, CreateTweetInput , UpdateTweetInput} from '@/types';
 import { setSuccessState } from '@/utils/successState';
 
 interface TweetState {
@@ -22,7 +22,7 @@ const initialState: TweetState = {
 
 };
 
-export const getUserTweets = createAsyncThunk<ApiResponse<Tweet[]>, UserIdInput>(
+export const getUserTweets = createAsyncThunk<ApiResponse<Tweet[]>, UserId>(
   'tweets/getUserTweets',
   async (userId, { rejectWithValue }) => {
     try {
