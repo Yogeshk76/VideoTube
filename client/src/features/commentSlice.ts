@@ -158,3 +158,4 @@ const commentSlice = createSlice({
 });
 
 export default commentSlice.reducer; 
+export const { resetError, resetCommentState } = commentSlice.actions;
