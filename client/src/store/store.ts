@@ -6,17 +6,19 @@ import likeReducer from '@/features/likeSlice';
 import tweetReducer from '@/features/tweetSlice';
 import subscriptionReducer from '@/features/subscriptionSlice';
 import playlistReducer from '@/features/playlistSlice';
+import userReducer from '@/features/userSlice';
 import dashboardReducer from '@/features/dashboardSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    videos: videoReducer,
-    comments: commentReducer,
-    likes: likeReducer,
-    tweets: tweetReducer,
-    subscriptions: subscriptionReducer,
-    playlists: playlistReducer,
+    user: userReducer,
+    video: videoReducer,
+    comment: commentReducer,
+    playlist: playlistReducer,
+    like: likeReducer,
+    tweet: tweetReducer,
+    subscription: subscriptionReducer,
     dashboard: dashboardReducer,
   },
 });
