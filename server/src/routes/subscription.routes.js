@@ -10,7 +10,8 @@ const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 router
-  .route("/c/:channelId") // Get subscribers of this channel
+  .route("/c/:channelId") 
+  // Get subscribers of this channel
   .get(getUserChannelSubscribers)
   .post(toggleSubscription); // Toggle subscription for this channel
 

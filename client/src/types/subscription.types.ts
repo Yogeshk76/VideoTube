@@ -8,3 +8,11 @@ export interface Subscription {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ChannelIdInput {
+  channelId: string;
+}
+
+export interface GetSubscribedChannelsInput {
+  userId: string;
+}
