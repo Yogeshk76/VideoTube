@@ -6,3 +6,4 @@ export * from './like.types';
 export * from './user.types';
 export * from './subscription.types';
 export * from './tweet.types'
+export * from './dashboard.types';
