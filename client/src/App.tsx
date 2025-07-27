@@ -1,19 +1,12 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// Page imports
-import EmptyVideoPage from '@/pages/EmptyVideoPage';
-import Layout from '@/components/Layout';
+import AppRoutes from './routes/AppRoutes';
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<EmptyVideoPage />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <>
+      <AppRoutes />
+    </>
   );
 };
 
 export default App;
+
