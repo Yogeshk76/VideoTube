@@ -8,14 +8,17 @@ class ApiError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.data = null;
-    this.errors = errors;
     this.success = false;
 
-    if(stack) {
+    this.errors = Array.isArray(errors) && errors.length > 0
+      ? errors
+      : [{ field: "global", message }];
+
+    if (stack) {
       this.stack = stack;
-    }else {
+    } else {
       Error.captureStackTrace(this, this.constructor);
-  }
+    }
   }
 }
 
