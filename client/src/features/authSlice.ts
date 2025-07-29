@@ -29,7 +29,7 @@ const initialState: AuthState = {
 };
 
 
-export const login = createAsyncThunk<ApiResponse<LoginData>, LoginInput>(
+export const loginUser = createAsyncThunk<ApiResponse<LoginData>, LoginInput>(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
@@ -103,16 +103,16 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // ── Login
-      .addCase(login.pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.user = action.payload.data.user;
         setSuccessState(state, action.payload);
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

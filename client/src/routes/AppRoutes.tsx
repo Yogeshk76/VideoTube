@@ -54,6 +54,7 @@ const AppRoutes = () => {
       {/* Public Routes under AppLayout */}
       <Route path="/" element={<AppLayout />}>
         <Route index element={<AllVideosPage />} />
+        <Route path="videos" element={<AllVideosPage />} />
         <Route path="video/:id" element={<VideoDetailPage />} />
         <Route path="playlist/:id" element={<PlaylistDetailsPage />} />
         <Route path="video/:videoId/playlist/:id" element={<PlaylistVideoPage />} />
