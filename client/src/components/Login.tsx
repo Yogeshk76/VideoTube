@@ -32,7 +32,7 @@ function Login() {
 
   return (
     <Container>
-       <div className="w-full max-w-md bg-gray-900 border border-gray-700 p-8 rounded-lg">
+      <div className="w-full max-w-md bg-gray-900 border border-gray-700 p-8 rounded-lg">
         <h2 className="mb-6 text-center text-2xl font-semibold uppercase text-white">Play</h2>
 
         {/* Global Error */}
@@ -44,15 +44,15 @@ function Login() {
 
         <form onSubmit={handleSubmit(login)} noValidate>
           <label htmlFor="email" className="mb-1 inline-block text-gray-300">
-            Email or Username*
+            Email*
           </label>
           <Input
             id="email"
             type="text"
-            placeholder="Enter email or username"
+            placeholder="Enter email"
             className="mb-4"
             {...register("email", {
-              required: "Email or username is required",
+              required: "Email is required",
             })}
           />
           {errors.email && (
