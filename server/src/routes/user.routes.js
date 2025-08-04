@@ -23,28 +23,35 @@ router
   .route("/register")
   .post(
     (req, res, next) => {
-      upload.fields([
-        { name: "avatar", maxCount: 1 },
-        { name: "coverImage", maxCount: 1 },
-      ])(req, res, (err) => {
-        if (err instanceof multer.MulterError) {
-          if (err.code === "LIMIT_FILE_SIZE") {
-            return next(new ApiError(400, "File too large. Max size is 2MB."));
+      // Check if the request has files or is JSON
+      if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
+        // Handle file uploads
+        upload.fields([
+          { name: "avatar", maxCount: 1 },
+          { name: "coverImage", maxCount: 1 },
+        ])(req, res, (err) => {
+          if (err instanceof multer.MulterError) {
+            if (err.code === "LIMIT_FILE_SIZE") {
+              return next(new ApiError(400, "File too large. Max size is 2MB."));
+            }
+
+            return next(new ApiError(400, `Multer error: ${err.message}`));
           }
 
-          return next(new ApiError(400, `Multer error: ${err.message}`));
-        }
+          if (err?.code === "INVALID_FILE_TYPE") {
+            return next(new ApiError(400, err.message));
+          }
 
-        if (err?.code === "INVALID_FILE_TYPE") {
-          return next(new ApiError(400, err.message));
-        }
+          if (err) {
+            return next(new ApiError(500, "File upload failed"));
+          }
 
-        if (err) {
-          return next(new ApiError(500, "File upload failed"));
-        }
-
+          next();
+        });
+      } else {
+        // Handle JSON data
         next();
-      });
+      }
     },
     registerUser
   );

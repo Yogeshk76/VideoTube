@@ -15,7 +15,7 @@ import { setSuccessState } from '@/utils/successState';
 
 interface UserState {
   user: User | null;
-  isAuthenticated: boolean;
+  channelProfile: any | null;
   loading: boolean;
   error: string | null;
   statusCode?: number | null;
@@ -24,7 +24,7 @@ interface UserState {
 
 const initialState: UserState = {
   user: null,
-  isAuthenticated: false,
+  channelProfile: null,
   loading: false,
   error: null,
   statusCode: null,
@@ -64,7 +64,7 @@ export const updateUserAvatar = createAsyncThunk<ApiResponse<LoginData>, UpdateU
     try {
       const formData = new FormData();
       formData.append('avatar', avatarData.avatar);
-      const { data } = await api.patch('/users/update-avatar', formData, {
+      const { data } = await api.patch('/users/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return data;
@@ -80,7 +80,7 @@ export const updateUserCoverImage = createAsyncThunk<ApiResponse<LoginData>, Upd
     try {
       const formData = new FormData();
       formData.append('coverImage', coverImageData.coverImage);
-      const { data } = await api.patch('/users/update-cover-image', formData, {
+      const { data } = await api.patch('/users/cover-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return data;
@@ -90,7 +90,7 @@ export const updateUserCoverImage = createAsyncThunk<ApiResponse<LoginData>, Upd
   }
 );
 
-export const getUserChannelProfile = createAsyncThunk<ApiResponse<LoginData>, GetUserChannelProfileInput>(
+export const getUserChannelProfile = createAsyncThunk<ApiResponse<any>, GetUserChannelProfileInput>(
   'users/getUserChannelProfile',
   async (input, { rejectWithValue }) => {
     try {
@@ -121,7 +121,6 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
-      state.isAuthenticated = true;
     },
     resetError: (state) => {
       state.error = null;
@@ -137,8 +136,8 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateAccountDetails.fulfilled, (state, action) => {
+        state.loading = false;
         state.user = action.payload.data.user;
-        state.isAuthenticated = true;
         setSuccessState(state, action.payload);
       })
       .addCase(updateAccountDetails.rejected, (state, action) => {
@@ -152,7 +151,7 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
-        state.isAuthenticated = true;
+        state.loading = false;
         setSuccessState(state, action.payload);
       })
       .addCase(refreshAccessToken.rejected, (state, action) => {
@@ -166,8 +165,8 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateUserAvatar.fulfilled, (state, action) => {
+        state.loading = false;
         state.user = action.payload.data.user;
-        state.isAuthenticated = true;
         setSuccessState(state, action.payload);
       })
       .addCase(updateUserAvatar.rejected, (state, action) => {
@@ -181,8 +180,8 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(updateUserCoverImage.fulfilled, (state, action) => {
+        state.loading = false;
         state.user = action.payload.data.user;
-        state.isAuthenticated = true;
         setSuccessState(state, action.payload);
       })
       .addCase(updateUserCoverImage.rejected, (state, action) => {
@@ -196,8 +195,8 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserChannelProfile.fulfilled, (state, action) => {
-        state.user = action.payload.data.user;
-        state.isAuthenticated = true;
+        state.loading = false;
+        state.channelProfile = action.payload.data;
         setSuccessState(state, action.payload);
       })
       .addCase(getUserChannelProfile.rejected, (state, action) => {
@@ -211,6 +210,7 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getWatchHistory.fulfilled, (state, action) => {
+        state.loading = false;
         if (state.user) {
           state.user.watchHistory = action.payload.data.watchHistory;
         }

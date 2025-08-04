@@ -16,6 +16,8 @@ import TermsConditionsPage from "@/pages/legal/TermsConditionsPage";
 // Video Pages
 import AllVideosPage from "@/pages/videos/AllVideosPage";
 import VideoDetailPage from "@/pages/videos/VideoDetailPage";
+import UploadVideoPage from "@/pages/videos/UploadVideoPage";
+import SearchResultsPage from "@/pages/videos/SearchResultsPage";
 
 // Playlist Pages
 import PlaylistDetailsPage from "@/pages/playlists/PlaylistDetailsPage";
@@ -31,8 +33,8 @@ import ChannelSubscribers from "@/pages/channel/ChannelSubscribers";
 // My Channel (Protected)
 import SettingsLayout from "@/pages/settings/SettingsLayout";
 import MyChannelLayout from "@/pages/myChannel/MyChannelLayout";
-import MyVideos from "@/pages/myChannel/MyVideos";
-import MyPlaylists from "@/pages/myChannel/MyPlaylists";
+// import MyVideos from "@/pages/myChannel/MyVideos";
+// import MyPlaylists from "@/pages/myChannel/MyPlaylists";
 import MyTweets from "@/pages/myChannel/MyTweets";
 
 // Settings (Protected)
@@ -56,9 +58,10 @@ const AppRoutes = () => {
         <Route index element={<AllVideosPage />} />
         <Route path="videos" element={<AllVideosPage />} />
         <Route path="video/:id" element={<VideoDetailPage />} />
+        <Route path="search" element={<SearchResultsPage />} />
         <Route path="playlist/:id" element={<PlaylistDetailsPage />} />
         <Route path="video/:videoId/playlist/:id" element={<PlaylistVideoPage />} />
-        
+
         {/* Public Legal Pages */}
         <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="terms-conditions" element={<TermsConditionsPage />} />
@@ -78,10 +81,12 @@ const AppRoutes = () => {
 
         {/* Protected Routes */}
         <Route element={<RequireAuth />}>
+          <Route path="upload" element={<UploadVideoPage />} />
+
           <Route path="my-channel" element={<MyChannelLayout />}>
-            <Route index element={<MyVideos />} />
-            <Route path="videos" element={<MyVideos />} />
-            <Route path="playlists" element={<MyPlaylists />} />
+            {/* <Route index element={<MyVideos />} /> */}
+            {/* <Route path="videos" element={<MyVideos />} /> */}
+            {/* <Route path="playlists" element={<MyPlaylists />} /> */}
             <Route path="tweets" element={<MyTweets />} />
           </Route>
 

@@ -1,7 +1,26 @@
 {
-  "name": "videotube-root",
-  "private": true,
+  "name": "videotube",
+  "version": "1.0.0",
+  "description": "A YouTube-like video platform built with React, TypeScript, and Node.js",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "keywords": [
+    "youtube",
+    "video",
+    "react",
+    "typescript",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
   "devDependencies": {
-    "prettier": "^3.6.2"
+    "concurrently": "^8.2.2"
   }
 }

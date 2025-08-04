@@ -16,13 +16,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
     userId,
   } = req.query;
 
-  if (!req.user) {
-    throw new ApiError(
-      401,
-      "User needs to be logged in to access this resource"
-    );
-  }
-
   const match = {
     isPublished: true,
     ...(query ? { title: { $regex: query, $options: "i" } } : {}),
@@ -165,10 +158,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-
-  if (!req.user) {
-  throw new ApiError(401, "User must be logged in");
-} 
 
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid video ID");

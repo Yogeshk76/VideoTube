@@ -4,7 +4,6 @@ import type { Video, ApiResponse, PublishAVideoInput, UpdateVideoInput, DeleteVi
 import { setSuccessState } from '@/utils/successState';
 
 interface VideoState {
-  isAuthenticated: boolean;
   videos: Video[];
   video: Video | null;
   loading: boolean;
@@ -20,7 +19,6 @@ const initialState: VideoState = {
   error: null,
   statusCode: null,
   message: null,
-  isAuthenticated: false,
 };
 
 export const getAllVideos = createAsyncThunk<ApiResponse<Video[]>>(
@@ -39,7 +37,7 @@ export const getVideoById = createAsyncThunk<ApiResponse<Video>, VideoIdInput>(
   'videos/getById',
   async (videoId, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/videos/${videoId}`);
+      const { data } = await api.get(`/videos/${videoId.videoId}`);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch video');
@@ -81,9 +79,9 @@ export const updateVideo = createAsyncThunk<ApiResponse<Video>, UpdateVideoInput
 
 export const deleteVideo = createAsyncThunk<ApiResponse<null>, DeleteVideoInput>(
   'videos/deleteVideo',
-  async (videoId, { rejectWithValue }) => {
+  async ({ videoId }, { rejectWithValue }) => {
     try {
-      const {data} = await api.delete(`/videos/${videoId}`, {
+      const { data } = await api.delete(`/videos/${videoId}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -99,7 +97,7 @@ export const togglePublishStatus = createAsyncThunk<ApiResponse<Video>, VideoIdI
   'videos/togglePublishStatus',
   async ({ videoId }, { rejectWithValue }) => {
     try {
-      const { data } = await api.patch(`/videos/togggle/publish/${videoId}`, {
+      const { data } = await api.patch(`/videos/toggle/publish/${videoId}`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -116,17 +114,16 @@ const videoSlice = createSlice({
   initialState,
   reducers: {
     resetVideoState: (state) => {
-  state.video = null;
-  state.error = null;
-  state.message = null;
-  state.statusCode = null;
-},
-resetError: (state) => {
-  state.error = null;
-  state.message = null;
-  state.statusCode = null;
-}
-
+      state.video = null;
+      state.error = null;
+      state.message = null;
+      state.statusCode = null;
+    },
+    resetError: (state) => {
+      state.error = null;
+      state.message = null;
+      state.statusCode = null;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -137,7 +134,7 @@ resetError: (state) => {
       })
       .addCase(getAllVideos.fulfilled, (state, action) => {
         state.loading = false;
-        state.videos = action.payload.data;
+        state.videos = action.payload.message.videos;
         setSuccessState(state, action.payload);
       })
       .addCase(getAllVideos.rejected, (state, action) => {
@@ -151,7 +148,7 @@ resetError: (state) => {
       })
       .addCase(getVideoById.fulfilled, (state, action) => {
         state.loading = false;
-        state.video = action.payload.data;
+        state.video = action.payload.message;
         setSuccessState(state, action.payload);
       })
       .addCase(getVideoById.rejected, (state, action) => {

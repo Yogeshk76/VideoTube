@@ -48,7 +48,7 @@ export const registerUser = createAsyncThunk<ApiResponse<LoginData>, RegisterInp
   async (userData, { rejectWithValue }) => {
     try {
       const { data } = await api.post('/users/register', userData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 'Content-Type': 'application/json' },
       });
       return data;
     } catch (error: any) {
@@ -64,6 +64,10 @@ export const getCurrentUser = createAsyncThunk<ApiResponse<User>, void>(
       const { data } = await api.get('/users/current-user');
       return data;
     } catch (error: any) {
+      // If it's a 401 error, it means no user is logged in, which is not an error
+      if (error.response?.status === 401) {
+        return rejectWithValue(null); // Return null instead of error message
+      }
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch user');
     }
   }
@@ -142,7 +146,10 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        // If payload is null, it means no user is logged in (401), which is not an error
+        if (action.payload !== null) {
+          state.error = action.payload as string;
+        }
       })
 
       // ── Change Password

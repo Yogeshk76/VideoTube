@@ -92,32 +92,28 @@ function Signup() {
             )}
 
             <label htmlFor="avatar" className="mb-1 inline-block text-gray-300">
-              Avatar*
+              Avatar (Optional)
             </label>
             <Input
               id="avatar"
               type="text"
-              placeholder="avatar URL or upload file"
+              placeholder="Avatar URL (optional)"
               className="mb-4"
-              {...register("avatar", {
-                required: "Avatar is required",
-              })}
+              {...register("avatar")}
             />
             {errors.avatar && (
               <p className="text-sm text-red-500 mb-4">{errors.avatar.message}</p>
             )}
 
             <label htmlFor="coverImage" className="mb-1 inline-block text-gray-300">
-              Cover Image*
+              Cover Image (Optional)
             </label>
             <Input
               id="coverImage"
               type="text"
-              placeholder="cover image URL or upload file"
+              placeholder="Cover image URL (optional)"
               className="mb-4"
-              {...register("coverImage", {
-                required: "Cover image is required",
-              })}
+              {...register("coverImage")}
             />
             {errors.coverImage && (
               <p className="text-sm text-red-500 mb-4">{errors.coverImage.message}</p>

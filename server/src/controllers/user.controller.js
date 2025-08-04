@@ -24,7 +24,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { fullName, email, password, username } = req.body;
+  const { fullName, email, password, username, avatar: avatarUrl, coverImage: coverImageUrl } = req.body;
 
   if (
     [fullName, email, password, username].some((field) => field?.trim() === "")
@@ -41,41 +41,46 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   let avatarLocalPath;
+  let avatar = null;
+  let coverImage = null;
 
+  // Handle avatar - check for file upload first, then URL
   if (
     req.files &&
     Array.isArray(req.files.avatar) &&
     req.files.avatar.length > 0
   ) {
     avatarLocalPath = req.files.avatar[0].path;
+    avatar = await uploadOnCloudinary(
+      avatarLocalPath,
+      `avatars/${username}`
+    );
+  } else if (avatarUrl && avatarUrl.trim() !== "") {
+    // Use the provided URL
+    avatar = { url: avatarUrl };
   }
 
+  // Handle cover image - check for file upload first, then URL
   let coverImageLocalPath;
-
   if (
     req.files &&
     Array.isArray(req.files.coverImage) &&
     req.files.coverImage.length > 0
   ) {
     coverImageLocalPath = req.files.coverImage[0].path;
+    coverImage = await uploadOnCloudinary(
+      coverImageLocalPath,
+      `coverImages/${username}`
+    );
+  } else if (coverImageUrl && coverImageUrl.trim() !== "") {
+    // Use the provided URL
+    coverImage = { url: coverImageUrl };
   }
 
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar file is required");
-  }
-
-  const avatar = await uploadOnCloudinary(
-    avatarLocalPath,
-    `avatars/${req.body.username}`
-  );
-
-  const coverImage = await uploadOnCloudinary(
-    coverImageLocalPath,
-    `coverImages/${req.body.username}`
-  );
-
+  // Make avatar optional - use default if not provided
   if (!avatar) {
-    throw new ApiError(400, "Failed to upload avatar");
+    // Use a default avatar URL
+    avatar = { url: "https://res.cloudinary.com/drpzugmbo/image/upload/v1753359149/avatars/default-avatar.jpg" };
   }
 
   const user = await User.create({
@@ -98,13 +103,7 @@ const registerUser = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(
-      new ApiResponse(
-        201,
-        createdUser,
-        "User registered successfully",
-        null,
-        true
-      )
+      new ApiResponse(201, "User registered successfully", createdUser)
     );
 });
 
@@ -217,7 +216,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
 
     return res

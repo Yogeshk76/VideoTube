@@ -9,8 +9,6 @@
 
 // src/api.ts
 import axios from "axios";
-import { store } from "@/store/store";
-import { logout } from "@/features/authSlice";
 
 const api = axios.create({
   baseURL: "http://localhost:8000/api/v1",
@@ -36,8 +34,9 @@ api.interceptors.response.use(
     if (
       err.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/login") &&
-      !originalRequest.url.includes("/auth/signup")
+      !originalRequest.url.includes("/users/login") &&
+      !originalRequest.url.includes("/users/register") &&
+      !originalRequest.url.includes("/users/refresh-token")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -51,12 +50,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/refresh-token");
+        await api.post("/users/refresh-token");
         processQueue(null);
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        store.dispatch(logout());
+        // Clear cookies on logout
+        document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
