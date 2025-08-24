@@ -89,7 +89,7 @@ const Sidebar: React.FC = () => {
               <a href="#" className="hover:text-white">Policy & Safety</a>
               <a href="#" className="hover:text-white">How YouTube works</a>
             </div>
-            <p className="text-xs text-gray-500 mt-2">© 2024 VideoTube</p>
+            <p className="text-xs text-gray-500 mt-2">© 2025 VideoTube</p>
           </div>
         </div>
       </div>
